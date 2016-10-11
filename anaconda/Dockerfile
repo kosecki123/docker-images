@@ -13,6 +13,12 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
     rm ~/anaconda.sh
 
+ENV PATH /opt/conda/bin:$PATH
+
+RUN conda install -y -c conda-forge jasper
+RUN conda install -y -c conda-forge pygrib=2.0.1
+RUN apt-get install -y libjpeg62-turbo
+
 RUN apt-get install -y curl grep sed dpkg && \
     TINI_VERSION=`curl https://github.com/krallin/tini/releases/latest | grep -o "/v.*\"" | sed 's:^..\(.*\).$:\1:'` && \
     curl -L "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
@@ -20,7 +26,7 @@ RUN apt-get install -y curl grep sed dpkg && \
     rm tini.deb && \
     apt-get clean
 
-ENV PATH /opt/conda/bin:$PATH
+RUN mkdir -p ~/notebooks
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 CMD [ "/bin/bash" ]
